@@ -74,11 +74,11 @@ const sampleSlice = createSlice({
     },
     cartListAction: (state, { payload }) => {
       state.cartList = payload;
-      state.loading = false;
+      state.isLoading = false;
     },
     updateCartAction: (state, { payload }) => {
       state.updateCart = payload;
-      state.loading = false;
+      state.isLoading = false;
     },
     ///action
   },
