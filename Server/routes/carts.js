@@ -14,10 +14,10 @@ router.get("/api/allcarts", producted, async (req, res) => {
 });
 
 router.post("/api/addcart", producted, async (req, res) => {
-   const { material_type, cloth_type, price, product_image, status, qty ,_id} =
+    const { material_type, cloth_type, price, product_image, status, qty ,_id} =
     req.body;
 
-  var cartValid = await Carts.findOne({ _id : _id });
+  var cartValid = await Carts.findOne({ product_image : product_image  });
   if (cartValid) {
     return res
       .status(400)
