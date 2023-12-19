@@ -16,6 +16,7 @@ app.use(require("./routes/users"));
 app.use(require("./routes/products"));
 app.use(require("./routes/carts"));
 app.use(require("./routes/order"));
+app.use(require("./routes/raxzorpay"));
 
 mongoose.connect(process.env.MONGODB, {
   useNewUrlParser: true,
