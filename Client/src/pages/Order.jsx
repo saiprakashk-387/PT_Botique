@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Typography from "@mui/material/Typography";
- import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import Paper from "@mui/material/Paper";
@@ -20,16 +20,15 @@ const Img = styled("img")({
 export default function Order() {
   const dispatch = useDispatch();
   const { Orderlist, isLoading, error } = useSelector(allOrderListSelector);
-
   useEffect(() => {
     dispatch(orderListApi());
   }, []);
 
-  const cancelOrderedItem = async(id) => {
-    let data ={
-      "status" : "cancelled"
-    }
-    await dispatch(cancelOrderItemApi(id,data))
+  const cancelOrderedItem = async (id) => {
+    let data = {
+      status: "cancelled",
+    };
+    await dispatch(cancelOrderItemApi(id, data));
   };
   return (
     <Paper
@@ -52,8 +51,8 @@ export default function Order() {
       </Typography>
       {isLoading ? (
         <Loader />
-      ) : Orderlist?.length >= 1 ? (
-        Orderlist.map((val, i) => {
+      ) : Orderlist?.order_items[0]?.cartItems.length >= 1 ? (
+        Orderlist?.order_items[0]?.cartItems.map((val, i) => {
           return (
             <Grid container spacing={2}>
               <Grid item>
@@ -61,8 +60,8 @@ export default function Order() {
                   <Img alt="complex" src={val?.product_image} />
                 </ButtonBase>
               </Grid>
-              <Grid item xs={12} sm container>
-                <Grid item xs container direction="column" spacing={2}>
+              <Grid item xs={12} spacing={2} sm container>
+                <Grid item container direction="column" xs={6}>
                   <Grid item xs>
                     <Typography gutterBottom variant="subtitle1">
                       Material Type : {val?.material_type}
@@ -73,19 +72,44 @@ export default function Order() {
                     <Typography variant="subtitle1">
                       Price: {val?.price}
                     </Typography>
-                    <Button sx={{ color: "red" }} onClick={()=>{cancelOrderedItem(val?._id)}}>
-                      Cancel Item
+                    <Button
+                      sx={{ color: "Primary" }}
+                      // onClick={() => {
+                      //   cancelOrderedItem(val?._id);
+                      // }}
+                    >
+                      {"Dispatched"}
                     </Button>
                   </Grid>
+                </Grid>
+                <Grid item container direction="column" xs={6}>
+                  {Orderlist?.userInfo?.map((val, i) => {
+                    return (
+                      <Grid item xs>
+                        <Typography gutterBottom variant="subtitle1">
+                          Order Address : {val?.address}
+                        </Typography>
+                        <Typography variant="body2" gutterBottom>
+                          Name : {val?.name}
+                        </Typography>
+                        <Typography variant="subtitle1">
+                          Email: {val?.email}
+                        </Typography>
+                        <Typography variant="subtitle1">
+                          Number: {val?.number}
+                        </Typography>
+                      </Grid>
+                    );
+                  })}
                 </Grid>
               </Grid>
             </Grid>
           );
         })
-      ) :error? (
+      ) : error ? (
         "Something Went Wrong"
       ) : (
-        <Loader />
+        "No Order Found"
       )}
     </Paper>
   );

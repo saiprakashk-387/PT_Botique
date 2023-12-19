@@ -15,9 +15,8 @@ import MyProfile from "../Profile/MyProfile";
 import ProtectedRoute from "./ProtectedRoute";
 
 function MainRoute() {
-
   return (
-    <div>     
+    <div>
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -28,15 +27,14 @@ function MainRoute() {
           <Route path="/mycart" element={<Cart />} />
           <Route path="/myorders" element={<Order />} />
           {/* /////Admin Routes//// */}
-          <Route path ="/admindashboard" element={<AdminDashboard/>}/>
-          <Route path ="/adminuserlist" element={<UserList/>}/>
-          <Route path ="/adminuseredit" element={<UserEdit/>}/>
-          <Route path ="/addstock" element={<AddStockForm/>}/>
-          <Route path ="/viewstock" element={<StockList/>}/>
-          <Route path ="/stockedit" element={<StockEdit/>}/>
-        </Route>       
+          <Route path="/admindashboard" element={<AdminDashboard />} />
+          <Route path="/adminuserlist" element={<UserList />} />
+          <Route path="/adminuseredit" element={<UserEdit />} />
+          <Route path="/addstock" element={<AddStockForm />} />
+          <Route path="/viewstock" element={<StockList />} />
+          <Route path="/stockedit" element={<StockEdit />} />
+        </Route>
       </Routes>
-      
     </div>
   );
 }

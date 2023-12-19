@@ -7,10 +7,10 @@ import {
   cancelOrderItemAction,
   cartAction,
   cartListAction,
-   CreateUserAccountAction,
-   PlaceOrderAction,
-   productAction,
-   updateCartAction,
+  CreateUserAccountAction,
+  PlaceOrderAction,
+  productAction,
+  updateCartAction,
   UserEditProfileAction,
   UserLoginAction,
   usersAction,
@@ -21,7 +21,7 @@ import { baseUrl, ACCESS_TOKEN } from "../Constants/index";
 
 export const registerApi = (data, navigate) => {
   return (dispatch) => {
-     axios
+    axios
       .post(baseUrl + "/register", data)
       .then((res) => {
         dispatch(CreateUserAccountAction(res));
@@ -37,7 +37,7 @@ export const registerApi = (data, navigate) => {
 
 export const loginApi = (data, navigate) => {
   return (dispatch) => {
-     axios
+    axios
       .post(baseUrl + "/login", data)
       .then((res) => {
         sessionStorage.setItem("access_token", res?.data?.token);
@@ -52,14 +52,14 @@ export const loginApi = (data, navigate) => {
       .catch((err) => {
         toast.error(`${err.response.data.error}`);
         dispatch(UserLoginAction(err));
-       });
+      });
   };
 };
 ///user apis////
 ///profile ///
 export const editProfile = () => {
   return (dispatch) => {
-     axios
+    axios
       .get(baseUrl + "/myuser", {
         headers: {
           "Content-Type": "application/json",
@@ -72,7 +72,7 @@ export const editProfile = () => {
         dispatch(UserEditProfileAction(res));
       })
       .catch((err) => {
-          dispatch(UserEditProfileAction(err));
+        dispatch(UserEditProfileAction(err));
         toast.error(`${err.response.data.error}`);
       });
   };
@@ -80,7 +80,7 @@ export const editProfile = () => {
 
 export const updateProfile = (Value, id) => {
   return (dispatch) => {
-     axios
+    axios
       .put(baseUrl + `/edituser/${id}`, Value, {
         headers: {
           "Content-Type": "application/json",
@@ -120,7 +120,7 @@ export const getCart = () => {
 };
 
 export const addCart = (val) => {
-   return (dispatch) => {
+  return (dispatch) => {
     axios
       .post(baseUrl + "/addcart", val, {
         headers: {
@@ -131,7 +131,7 @@ export const addCart = (val) => {
         },
       })
       .then((res) => {
-         toast.success(`${res.data.message}`)
+        toast.success(`${res.data.message}`);
         dispatch(cartListAction(res));
       })
       .catch((error) => {
@@ -160,77 +160,82 @@ export const removeCartItem = (id) => {
   };
 };
 ///order///
-export const placeOrderApi =(requestBody)=>{
+export const placeOrderApi = (requestBody, navigate) => {
   return (dispatch) => {
     axios
-     .post(baseUrl + `/placeOrder`, requestBody, {
-       headers: {
-         "Content-Type": "application/json",
-         Authorization: ACCESS_TOKEN()
-           ? `Bearer ${ACCESS_TOKEN()}`
-           : undefined,
-       },
-     })
-     .then((res) => {
-       dispatch(PlaceOrderAction(res));
-     })
-     .catch((err) => {
-       toast.error(`${err.response.data.error}`);
-       dispatch(PlaceOrderAction(err));
-     });
- };
-}
-export const orderListApi =()=>{
+      .post(baseUrl + `/placeOrder`, requestBody, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: ACCESS_TOKEN()
+            ? `Bearer ${ACCESS_TOKEN()}`
+            : undefined,
+        },
+      })
+      .then((res) => {
+        dispatch(PlaceOrderAction(res));
+        navigate("/dashboard");
+      })
+      .catch((err) => {
+        toast.error(`${err.response.data.error}`);
+        dispatch(PlaceOrderAction(err));
+      });
+  };
+};
+export const orderListApi = () => {
   return (dispatch) => {
     axios
-     .get(baseUrl + `/allorders`, {
-       headers: {
-         "Content-Type": "application/json",
-         Authorization: ACCESS_TOKEN()
-           ? `Bearer ${ACCESS_TOKEN()}`
-           : undefined,
-       },
-     })
-     .then((res) => {
-       dispatch(AllOrderListAction(res?.data[0]?.order_items[0]?.cartItems));
-     })
-     .catch((err) => {
-       toast.error(`${err.response.data.error}`);
-       dispatch(AllOrderListAction(err));
-     });
- };
-}
+      .get(baseUrl + `/allorders`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: ACCESS_TOKEN()
+            ? `Bearer ${ACCESS_TOKEN()}`
+            : undefined,
+        },
+      })
+      .then((res) => {
+        console.log("ressss", res.data);
+        dispatch(
+          AllOrderListAction(
+            res?.data[0]
+            // ?.order_items[0]?.cartItems
+          )
+        );
+      })
+      .catch((err) => {
+        toast.error(`${err.response.data.error}`);
+        dispatch(AllOrderListAction(err));
+      });
+  };
+};
 
-export const cancelOrderItemApi =(id,data)=>{
+export const cancelOrderItemApi = (id, data) => {
   return (dispatch) => {
     axios
-     .put(baseUrl + `/updateOrder/${id}`,data, {
-       headers: {
-         "Content-Type": "application/json",
-         Authorization: ACCESS_TOKEN()
-           ? `Bearer ${ACCESS_TOKEN()}`
-           : undefined,
-       },
-     })
-     .then((res) => {
-      if(res.status === 200){
-        toast.success(`Cancellation Request Sent `);
-      }
-       dispatch(cancelOrderItemAction(res));
-     })
-     .catch((err) => {
-       toast.error(`${err.response.data.error}`);
-       dispatch(cancelOrderItemAction(err));
-     });
- };
-}
-
+      .put(baseUrl + `/updateOrder/${id}`, data, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: ACCESS_TOKEN()
+            ? `Bearer ${ACCESS_TOKEN()}`
+            : undefined,
+        },
+      })
+      .then((res) => {
+        if (res.status === 200) {
+          toast.success(`Cancellation Request Sent `);
+        }
+        dispatch(cancelOrderItemAction(res));
+      })
+      .catch((err) => {
+        toast.error(`${err.response.data.error}`);
+        dispatch(cancelOrderItemAction(err));
+      });
+  };
+};
 
 ///////////////////////admin api's///////////////////////
 ///stock///
-export const addstock = (data,navigate) => {
+export const addstock = (data, navigate) => {
   return (dispatch) => {
-     
     axios
       .post(baseUrl + "/createProduct", data, {
         headers: {
@@ -252,7 +257,7 @@ export const addstock = (data,navigate) => {
 };
 export const getStockList = () => {
   return (dispatch) => {
-     axios
+    axios
       .get(baseUrl + "/allproducts", {
         headers: {
           "Content-Type": "application/json",
@@ -348,10 +353,10 @@ export const deleteUser = (id) => {
 };
 
 ////not used//
-export const updateCartItems = (id,value) => {
+export const updateCartItems = (id, value) => {
   return (dispatch) => {
     axios
-      .put(baseUrl+`/updateCart/${id}`,value, {
+      .put(baseUrl + `/updateCart/${id}`, value, {
         headers: {
           "Content-Type": "application/json",
           Authorization: ACCESS_TOKEN()
@@ -360,7 +365,7 @@ export const updateCartItems = (id,value) => {
         },
       })
       .then((res) => {
-          dispatch(updateCartAction(res));
+        dispatch(updateCartAction(res));
       })
       .catch((err) => {
         toast.error(`${err}`);

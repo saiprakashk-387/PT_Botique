@@ -45,7 +45,7 @@ export default function Dashboard() {
   const handleCloseViewModel = () => {
     setView(false);
   };
-   return (
+  return (
     <Box sx={{ flexGrow: 1, marginBottom: "4rem" }}>
       <Grid
         container
@@ -61,9 +61,9 @@ export default function Dashboard() {
         ) : product?.data?.length >= 1 ? (
           product?.data?.map((val, index) => (
             <Grid item xs={2} sm={4} md={3} key={index}>
-              <Card >
+              <Card>
                 <CardMedia
-                   component="img"
+                  component="img"
                   height="250"
                   // image={`${val.product_image}?w=248&fit=crop&auto=format`}
                   image={val.product_image}
@@ -82,7 +82,7 @@ export default function Dashboard() {
                     {`${val?.price}.00`}
                   </Span>
                   {id === val._id ? (
-                    <Button disabled color="success">
+                    <Button disabled color="success" sx={{ fontSize: 11 }}>
                       Added To cart
                     </Button>
                   ) : (
@@ -91,6 +91,7 @@ export default function Dashboard() {
                       onClick={() => {
                         addToCart(val);
                       }}
+                      sx={{ fontSize: 11 }}
                     >
                       Add to cart
                     </Button>

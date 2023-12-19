@@ -15,16 +15,16 @@ import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import FormControl from "@mui/material/FormControl";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { useDispatch } from "react-redux";
 import { placeOrderApi } from "../API/Api";
 import CartProductInfo from "./CartproductInfo";
+import { useNavigate } from "react-router-dom";
+import { RazorpayApiKey, baseUrl } from "../Constants";
+import useRazorpay from "react-razorpay";
+import axios from "axios";
 
-const Img = styled("img")({
-  margin: "auto",
-  display: "block",
-  maxWidth: "100%",
-  maxHeight: "100%",
-});
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
@@ -36,9 +36,10 @@ const Item = styled(Paper)(({ theme }) => ({
   textAlign: "center",
   color: theme.palette.text.secondary,
 }));
-
 export default function CartSummary(props) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [Razorpay] = useRazorpay();
   const {
     cartView,
     handleCartView,
@@ -47,10 +48,12 @@ export default function CartSummary(props) {
     cartPriceTotal,
   } = props;
   const [addressInfo, setAddressInfo] = useState();
+  const [checkAddress, setCheckAddress] = useState();
   const UserDetails = JSON.parse(sessionStorage.getItem("userdetails"));
 
   const handleOrderAddress = (e) => {
     let value = e.target.value;
+    setCheckAddress(value);
     const addres1 = {
       name: UserDetails?.data?.firstname + UserDetails?.data?.lastname,
       email: UserDetails?.data?.email,
@@ -62,6 +65,14 @@ export default function CartSummary(props) {
     };
     setAddressInfo(addres1);
   };
+
+  const createOrder = async (requestBody) => {
+    const { data } = await axios.post(baseUrl + `/createOrder`, {
+      amount: requestBody.total * 100,
+      currency: "INR",
+    });
+    return data;
+  };
   const placeOrder = async () => {
     const requestBody = {
       order_items: { cartItems },
@@ -69,9 +80,60 @@ export default function CartSummary(props) {
       userInfo: [addressInfo],
       status: "dipatched",
     };
-    await dispatch(placeOrderApi(requestBody));
-  };
+    const order = await createOrder(requestBody);
+    const options = {
+      key: RazorpayApiKey,
+      amount: requestBody.total * 100,
+      currency: "INR",
+      name: "Patnam Trends",
+      description: "Test Transaction",
+      order_id: order.id,
+      handler: (res) => {
+        fetch(baseUrl + `/verifySignature`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            transaction: res.razorpay_payment_id,
+            orderID: res.razorpay_order_id,
+            signature: res.razorpay_signature,
+          }),
+        })
+          .then((verificationResponse) =>
+            // console.log("resss", verificationResponse)
+            verificationResponse.json()
+          )
+          .then(async (verificationData) => {
+            await dispatch(placeOrderApi(requestBody, navigate));
+          })
+          .catch((verificationError) => {
+            console.error("Error verifying payment:", verificationError);
+          });
+      },
+      prefill: {
+        name: "Sai Prakash",
+        email: "sai387@yopmail.com",
+        contact: "9999999999",
+      },
+      notes: {
+        address: requestBody,
+      },
+      theme: {
+        color: "#3399cc",
+      },
+    };
 
+    const rzpay = new Razorpay(options);
+    rzpay.open();
+  };
+  const placeOrderError = () => {
+    toast.error(`Select Address`);
+  };
+  const closeCartSummar = () => {
+    setCheckAddress("");
+    handleCartView();
+  };
   return (
     <div>
       <Dialog
@@ -85,7 +147,7 @@ export default function CartSummary(props) {
             <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
               Cart Summary
             </Typography>
-            <Button autoFocus color="inherit" onClick={handleCartView}>
+            <Button autoFocus color="inherit" onClick={() => closeCartSummar()}>
               Cancel {""}
               <IconButton edge="start" color="inherit" aria-label="close">
                 <CloseIcon />
@@ -110,7 +172,6 @@ export default function CartSummary(props) {
             <Grid item xs={6} md={7}>
               {cartItems && cartItems.length >= 1
                 ? cartItems.map((val, i) => {
-                    console.log("val", val);
                     return (
                       <>
                         <Item>
@@ -133,7 +194,9 @@ export default function CartSummary(props) {
               <Item>
                 <Typography varient="h1">Order Details</Typography>
                 <Box>
-                  <Typography varient="h3">Choose Shipping Address</Typography>
+                  <Typography varient="h3">
+                    Choose Shipping Address *
+                  </Typography>
                   <FormControl>
                     <RadioGroup row>
                       <Box sx={{ textAlign: "left" }}>
@@ -200,16 +263,27 @@ export default function CartSummary(props) {
                     Total Qty : {cartCountTotal}
                   </Typography>
                   <Typography varient="h3">
-                    Total Payable Amount :$ {cartPriceTotal}
+                    Total Payable Amount :INR {cartPriceTotal}
                   </Typography>
                 </Box>
-                <Button
-                  color="primary"
-                  variant="contained"
-                  onClick={placeOrder}
-                >
-                  Place Order
-                </Button>
+                {checkAddress ? (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    onClick={placeOrder}
+                  >
+                    Order Now
+                  </Button>
+                ) : (
+                  <Button
+                    color="primary"
+                    variant="contained"
+                    // disabled
+                    onClick={placeOrderError}
+                  >
+                    Order Now
+                  </Button>
+                )}
               </Item>
             </Grid>
           </Grid>

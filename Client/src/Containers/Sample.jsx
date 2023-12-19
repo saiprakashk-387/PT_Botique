@@ -1,20 +1,19 @@
-import React ,{useEffect} from 'react'
-import {useDispatch, useSelector} from "react-redux"
-import { api } from '../API/Api';
-import { sampleSelector } from '../redux/slice';
+// import React ,{useEffect} from 'react'
+// import {useDispatch, useSelector} from "react-redux"
+// import { api } from '../API/Api';
+// import { sampleSelector } from '../redux/slice';
 
-export const Sample = () => {
-  const dispatch = useDispatch()
+// export const Sample = () => {
+//   const dispatch = useDispatch()
 
-  const {sample} = useSelector(sampleSelector)
-  // console.log("duffhudgnfg",sample);
+//   const {sample} = useSelector(sampleSelector)
 
-  useEffect(()=>{
-    // dispatch(api());
-  },[])
+//   useEffect(()=>{
+//     // dispatch(api());
+//   },[])
 
-  return (
-    <div>Filltext</div>
-  )
-}
-export default Sample;
+//   return (
+//     <div>Filltext</div>
+//   )
+// }
+// export default Sample;
